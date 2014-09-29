@@ -1,0 +1,160 @@
+ 在centos6.5上 64位操作系统安装lamp环境，通过yum安装，前提确保linux已经关闭防火墙。
+
+一、准备工作
+
+1、yum update  检查一下系统更新
+
+2、yum -y install gcc  gcc  gcc-c   安装编译环境
+
+3、yum erase httpd  卸载系统自带的httpd
+
+4、yum install zlib-devel libtool ncurses-devel libxml2-devel
+
+二、安装 MySQL
+
+1、首先来进行 MySQL 的安装。打开超级终端，输入：
+
+[root@localhost ~]# yum install mysql mysql-server
+
+2、安装完毕，让 MySQL 能够随系统自动启动：
+
+[root@localhost ~]# chkconfig --levels 235 mysqld on
+
+[root@localhost ~]# /etc/init.d/mysqld start
+
+3、设置MySQL 数据 root 账户的密码：
+
+[root@localhost ~]# mysql_secure_installation
+
+当出现如下提示时候直接按回车：
+
+Enter current password for root
+
+出现如下再次回车：
+
+Set root password? [Y/n]
+
+出现如下提示输入你需要设置的密码，回车后在输入一次确认：
+
+New password:
+
+接下来还会有四个确认，分别是：
+
+Remove anonymous users? [Y/n]
+
+Disallow root login remotely? [Y/n]
+
+Remove test database and access to it? [Y/n]
+
+Reload privilege tables now? [Y/n]
+
+直接回车即可。
+
+4、重启mysql
+
+/etc/init.d/mysqld restart #重启
+
+/etc/init.d/mysqld stop #停止
+
+ 
+
+/etc/init.d/mysqld start #启动
+
+三、安装 Apache 组件
+
+由于 CentOS 已经封装了 Apache，直接运行安装：
+
+[root@localhost ~]# yum install httpd
+
+同样配置系统让 Apache 随系统启动：
+
+[root@localhost ~]# chkconfig --levels 235 httpd on
+
+配置完毕，启动 Apache：
+
+[root@localhost ~]# /etc/init.d/httpd start
+
+如果在启动过程中出现
+
+[root@localhost ~]# Starting httpd: httpd: Could not reliably determine the server's fully qualified domain name, using payment.meijialclub.com for ServerName [  OK  ]
+
+那就修改一下httpd.conf
+
+查找一下文件为准
+
+apache <wbr>php <wbr>mysql <wbr>centos6.5安装方法
+
+然后修改http.conf 
+
+配置完毕，启动 Apache：
+
+[root@localhost ~]# vi /etc/httpd/conf/httpd.conf
+
+找到#ServerName www.example.com:80然后在下面加入如下
+
+ServerName 127.0.0.1:80
+
+然后重启apache
+
+/etc/init.d/httpd restart
+
+apache <wbr>php <wbr>mysql <wbr>centos6.5安装方法
+
+ 
+
+此时apache已经安装好了，访问http://172.16.7.69/就可以看到如下界面（备注：172.16.7.69是服务器的ip）
+
+ 
+
+注意，如果其他机器访问这台服务无法显示这个页面，而直接在这台服务器上可以访问的话，一般情况下是 CentOS 自带的防火墙禁止了。你只需要进入防火墙，将 “WWW” 对应的 “80” 端口打开即可。
+
+apache <wbr>php <wbr>mysql <wbr>centos6.5安装方法
+
+注意：在CentOS 中 Apache 的默认根目录是/var/www/html，配置文件 /etc/httpd/conf/httpd.conf。其他配置存储在 /etc/httpd/conf.d/ 目录。
+
+四、安装php
+
+输入如下指令安装 PHP:
+
+[root@localhost ~]# yum install php
+
+需要重新启动 Apache 服务：
+
+[root@localhost ~]# /etc/init.d/httpd restart
+
+四、测试 PHP 相关信息
+
+　　这步实际上可以省略，但是为了测试是否安装成功，你可以新建一个 PHP 页面进行测试，使用 vim 编辑器新建：
+
+[root@localhost ~]# vi /var/www/html/info.php
+
+按 “i” 键进行编辑，输入：
+
+
+最后介绍相关配置与环境
+
+ 
+
+ 
+
+Apache主配置文件：/etc/httpd/conf/httpd.conf 
+
+ 
+
+Apache主配置目录，可以将不同类型的配置分门别类放入这个目录中：/etc/httpd/conf.d/ 
+
+ 
+
+Apache网站根目录：/var/www/html/ 
+
+ 
+
+Apache日志文件目录：/var/log/httpd 
+
+ 
+
+MySQL的my.cnf配置文件：/etc/my.cnf 
+
+ 
+
+MySQL数据库文件位置：/usr/lib/mysql
